@@ -1,0 +1,2 @@
+C:\Users\Milica\Desktop\C#\GameOfLife\x64\Debug\GameOfLife.exe
+C:\Users\Milica\Desktop\C#\GameOfLife\x64\Debug\GameOfLife.pdb
