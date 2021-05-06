@@ -1,3 +1,3 @@
 ﻿  GameOfLife.cpp
-C:\Users\Milica\Desktop\C#\GameOfLife\GameOfLife.cpp(256,13): warning C4101: 'k': unreferenced local variable
+C:\Users\Milica\Desktop\C#\GameOfLife\GameOfLife.cpp(243,13): warning C4101: 'k': unreferenced local variable
   GameOfLife.vcxproj -> C:\Users\Milica\Desktop\C#\GameOfLife\x64\Debug\GameOfLife.exe

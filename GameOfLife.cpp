@@ -88,19 +88,6 @@ void loadImage(const char* filename, int*& array, int width, int height)
 	
 }
 
-void subSegment()
-{
-	int x = 0, y = 0, dim = 0;
-	std::cout << " Unesite koordinate pocetnog piksela (x,y): ";
-	std::cout << "x=";
-	std::cin >> x;
-	std::cout << "y=";
-	std::cin >> y;
-	std::cout << " Unesite zeljenu dimenziju kvadratnog podsegmenta:";
-	std::cin >> dim;
-
-
-}
 
 int main()
 {	
@@ -134,11 +121,12 @@ int main()
 
 			for (int i = 0; i < imageSize; i++)
 			{
-				// Matricu nula i jedinica preslikavam u sliku
+				// Ucitanu matricu nula i jedinica preslikavam u sliku
 				// Bijela polja su jedinice, to su zive celije
 				// Crna polja su nule, to su mrtve celije
 
 				readFile >> currentState[i];
+
 				if (currentState[i] == 0) //crna
 				{
 					image[i].r = 0;
@@ -154,7 +142,7 @@ int main()
 			}
 			readFile.close();		
 			
-			// Ucitanu matricu piksela upisujem u fajl - sliku
+			// Kreiranu matricu piksela upisujem u fajl - sliku
 			writeImage("image.ppm", image, width, height);
 
 			break;
@@ -208,7 +196,7 @@ int main()
 		}			
 	}
 
-	// Nakon sto smo ucitali matricu, i imamo cjelokupno trenutno stanje, bira se da li da se radi sa cijelom matricom
+	// Nakon sto smo ucitali matricu, i imamo cjelokupno trenutno stanje, bira se da li da se radi sa cijelom matricom,
 	// ili samo sa nekim njenim podsegmentom
 
 	/*
@@ -252,7 +240,6 @@ int main()
 
 		//std::cout << width << " " << height << "\n"; 
 
-
 		int i, j, k, l=0;
 		
 		for (i = 0; i < dim; i++)
@@ -274,7 +261,6 @@ int main()
 		currentState = pomCS;
 		image = (Pixel*)malloc(bytes);
 		image = pomIMG;
-
 
 		/*std::cout << "\n";
 		for (int i = 0; i < dim; i++)
@@ -332,7 +318,6 @@ int main()
 				cl_program program;               // program
 				cl_kernel kernel;                 // kernel
 
-				// Niz za globalnu velicinu i niz za lokalnu velicinu
 				size_t globalSize[2], localSize[2];	
 				cl_int err;
 
@@ -355,7 +340,7 @@ int main()
 				// Create a command queue 
 				queue = clCreateCommandQueue(context, device_id, 0, &err);
 
-				// Ucitavanje kernela
+				// Load kernel
 				char* kernelSource = readKernelSource("gameOfLife.cl");
 
 				// Create the compute program from the source buffer
@@ -385,7 +370,6 @@ int main()
 				// Create the compute kernel in the program we wish to run
 				kernel = clCreateKernel(program, "gameOfLife", &err);
 		
-
 				// Create the input and output arrays in device memory for our calculation
 				// Alociramo memoriju na uredjaju:
 				// izlazna slika
@@ -438,7 +422,7 @@ int main()
 				for (int i = 0; i < imageSize; i++)
 					currentState[i] = nextState[i];
 
-				// release OpenCL resources
+				// Release OpenCL resources
 				clReleaseMemObject(d_image);
 				clReleaseMemObject(d_currentState);
 				clReleaseMemObject(d_nextState);
@@ -447,7 +431,7 @@ int main()
 				clReleaseCommandQueue(queue);
 				clReleaseContext(context);
 
-				// release host memory
+				// Release host memory
 				free(kernelSource);
 			}
 			break;
@@ -460,7 +444,7 @@ int main()
 
 	std::cout << "\n";
 
-	// Oslobadjanje memorije
+	// Oslobadjanje memorije hosta
 	free(image);  
 	free(currentState);
 	free(nextState);
