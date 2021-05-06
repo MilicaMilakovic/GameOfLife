@@ -38,18 +38,11 @@ bool blinker(__global int* currentState, __global int* nextState, __global struc
 	return false;
 }
 
-__kernel void gameOfLife(__global struct Pixel* image, const int width, const int height, __global int* currentState, __global int* nextState) // 2 pomocna niza od 0 i 1
+__kernel void gameOfLife(__global struct Pixel* image, const int width, const int height, __global int* currentState, __global int* nextState) 
 {
 	int i = get_global_id(0);
 	int j = get_global_id(1);	
 
-	/*
-	if (i == 0 || i == width - 1 || j == 0 || j == width - 1)
-	{
-		//nextState[j*width + i] = currentState[j*width + i];
-		//return;
-	}
-	*/
 
 	int livingNeighbours = 0;
 
@@ -101,15 +94,3 @@ __kernel void gameOfLife(__global struct Pixel* image, const int width, const in
 		image[j * width + i].b = 0;
 	}
 }
-
-/*
-__kernel void subSegment(__global int* array1, __global int* array2, const int subSegmentWidth, const int subSegmentHeight, const int width, const int height)
-{
-    int i = get_global_id(0);
-	int j = get_global_id(1);
-	int lI = get_local_id(0);
-	int lJ = get_local_id(1);
-
-	array2[j*subSegmentWidth + i] = array1[j*width+subSegmentHeight + i + subSegmentWidth];
-}
-*/

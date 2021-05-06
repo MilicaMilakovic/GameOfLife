@@ -32,7 +32,7 @@ char* readKernelSource(const char* filename)
 	return kernelSource;
 } 
 
-void writeImage(const char* filename, const Pixel* array, const int width, const int height) //funkcija za ispis slika kao iteracija igre
+void writeImage(const char* filename, const Pixel* array, const int width, const int height) 
 {
 	FILE* fp = fopen(filename, "wb"); /* b - binary mode */
 	fprintf(fp, "P6\n%d %d\n255\n", width, height);
@@ -40,7 +40,7 @@ void writeImage(const char* filename, const Pixel* array, const int width, const
 	fclose(fp);
 }
 
-void writeMatrix(int width, int height)  
+void createBinaryMatrix(int width, int height)  
 {
 	std::ofstream outfile("mat.txt");
 	const char* values[] = { "0 ", "1 " };
@@ -88,7 +88,19 @@ void loadImage(const char* filename, int*& array, int width, int height)
 	
 }
 
-int *subSegment(int width, int height, int* array); //funkcija za dobavljanje podsegmenta
+void subSegment()
+{
+	int x = 0, y = 0, dim = 0;
+	std::cout << " Unesite koordinate pocetnog piksela (x,y): ";
+	std::cout << "x=";
+	std::cin >> x;
+	std::cout << "y=";
+	std::cin >> y;
+	std::cout << " Unesite zeljenu dimenziju kvadratnog podsegmenta:";
+	std::cin >> dim;
+
+
+}
 
 int main()
 {	
@@ -108,7 +120,7 @@ int main()
 	switch (in)
 	{	
 		case 1:
-		{
+		{			
 			width = 256;
 			height = 256;
 			imageSize = width * height;
@@ -140,8 +152,8 @@ int main()
 					image[i].b = 255;
 				}
 			}
-			readFile.close();
-
+			readFile.close();		
+			
 			// Ucitanu matricu piksela upisujem u fajl - sliku
 			writeImage("image.ppm", image, width, height);
 
@@ -196,50 +208,91 @@ int main()
 		}			
 	}
 
+	// Nakon sto smo ucitali matricu, i imamo cjelokupno trenutno stanje, bira se da li da se radi sa cijelom matricom
+	// ili samo sa nekim njenim podsegmentom
+
+	/*
+	for (int i = 0; i < height; i++)
+	{
+		for (int j = 0; j < width; j++)
+		{
+			std::cout << currentState[i * width + j] << " ";
+		}
+		std::cout << "\n";
+	}
+	*/
+		
+	char c='n';
+	std::cout << " Ucitavanje podsegmenta? [y/n]  ";
+	std::cin >> c;
+
+	if (c == 'y')
+	{
+		int x = 0, y = 0, dim = 0;
+		std::cout << " Unesite koordinate pocetnog piksela (x,y): \n ";
+		std::cout << "x = ";
+		std::cin >> x;
+		std::cout << " y = ";
+		std::cin >> y;
+		std::cout << " Unesite zeljenu dimenziju kvadratnog podsegmenta: ";
+		std::cin >> dim;
+
+		int w = width;
+
+		height = width = dim;
+		imageSize = width * height;
+
+		bytes = width * height * sizeof(Pixel);
+		bytes1 = width * height * sizeof(int);
+
+		int* pomCS = (int*)malloc(bytes1);
+		Pixel* pomIMG = (Pixel*)malloc(bytes);
+				
+		nextState = (int*)malloc(bytes1);
+
+		//std::cout << width << " " << height << "\n"; 
+
+
+		int i, j, k, l=0;
+		
+		for (i = 0; i < dim; i++)
+		{
+			for (j = 0; j < dim; j++)
+			{
+				//std::cout << currentState[(y + i) * w + x + j] << " " ;
+				pomCS[l++] = currentState[(y + i) * w + x + j];
+
+				pomIMG[i*dim+j].r = image[(y + i) * w + x + j].r;
+				pomIMG[i * dim + j].g = image[(y + i) * w + x + j].g;
+				pomIMG[i*dim+j].b = image[(y + i) * w + x + j].b;				
+			
+			}
+			//std::cout << "\n";
+		}
+			
+		currentState = (int*)malloc(bytes1);
+		currentState = pomCS;
+		image = (Pixel*)malloc(bytes);
+		image = pomIMG;
+
+
+		/*std::cout << "\n";
+		for (int i = 0; i < dim; i++)
+		{
+			for (int j = 0; j < dim; j++)
+			{
+				std::cout << pomCS[i * width + j] << " ";
+			}
+			std::cout << "\n";
+		}*/
+
+		writeImage("subSegment.ppm", image, width, height);
 	
-	//int width = 10;
-	//int height = 10;	
-	//int imageSize = width * height;
-	
-	//size_t bytes = width * height * sizeof(Pixel);
-	//size_t bytes1 = width * height * sizeof(int);
+		std::cout << "\n Podsegment ucitan! \n";
+	}
+	else 
+		std::cout << "\n Ucitana cijela matrica! \n";
 
-	// slika
-	 //image = (Pixel*)malloc(bytes); 
-	// trenutno stanje
-	 //currentState = (int*)malloc(bytes1); 
-	// naredno stanje
-	 //nextState = (int*)malloc(bytes1); 
-
-
-	// Ucitam matricu nula i jedinica iz fajla
-	//std::ifstream readFile("input.txt", std::ios_base::in);
-	//
-	//for (int i = 0; i < imageSize; i++)
-	//{
-	//	// Matricu nula i jedinica preslikavam u sliku
-	//	// Bijela polja su jedinice, to su zive celije
-	//	// Crna polja su nule, to su mrtve celije
-
-	//	readFile >> currentState[i];
-	//	if (currentState[i] == 0) //crna
-	//	{
-	//		image[i].r = 0;
-	//		image[i].g = 0;
-	//		image[i].b = 0;
-	//	}
-	//	if (currentState[i] == 1) //bijela
-	//	{
-	//		image[i].r = 255;
-	//		image[i].g = 255;
-	//		image[i].b = 255;
-	//	}
-	//}
-	//readFile.close();
-
-	//// Ucitanu matricu piksela upisujem u fajl - sliku
-	//writeImage("image.ppm", image, width, height);		
-	
 	std::cout << "\n" <<"=== Unesite rezim rada: ===\n";
 	std::cout << "  1 GameOfLife u 10 generacija...\n";
 	std::cout << "  2 Prelazak na proizvoljnu iteraciju igre...\n";
@@ -414,78 +467,3 @@ int main()
 	system("pause");
 	return 0;
 }
-/*
-int* subSegment(int width, int height, int* hostArray)
-{
-	int subSegmentWidth;
-	int subSegmentHeight;
-	size_t bytes = width * height * sizeof(int);
-	
-	//uzimamo pocetni piksel i na osnovu njega generisemo ostatak slike u desno i na dole
-	std::cout << "Dohvatanje podsegmenta. Unesite vrijednost pocetne kordinate (_ , _) - (0,0) za citavu sliku. ";
-	std::cin >> subSegmentWidth;
-	std::cin >> subSegmentHeight;
-	size_t bytes1 = (width - subSegmentWidth) * (height - subSegmentHeight) * sizeof(int);
-	int *subArray = (int*)malloc(bytes1);
-	
-	if (subSegmentWidth == 0 && subSegmentHeight == 0)
-	{
-		subArray = nullptr;
-		return subArray;
-	}
-	
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	cl_mem deviceSubSegmentArray1;
-	cl_mem deviceSubSegmentArray2;
-	cl_platform_id cpPlatform;		// OpenCL platform
-	cl_device_id device_id;           // device ID
-	cl_context context;               // context
-	cl_command_queue queue;           // command queue
-	cl_program program;               // program
-	cl_kernel kernel;
-	cl_int err;// kernel
-
-	size_t globalSize[2], localSize[2];	//niz za globalnu velicinu
-	globalSize[0] = width - subSegmentWidth;
-	globalSize[1] = height - subSegmentHeight;
-	localSize[0] = 8;
-	localSize[1] = 8;
-
-	err = clGetPlatformIDs(1, &cpPlatform, NULL);
-	err = clGetDeviceIDs(cpPlatform, CL_DEVICE_TYPE_GPU, 1, &device_id, NULL);
-	context = clCreateContext(0, 1, &device_id, NULL, NULL, &err);
-	queue = clCreateCommandQueue(context, device_id, 0, &err);
-	char* kernelSource = readKernelSource("OpenClFile.cl");
-	program = clCreateProgramWithSource(context, 1, (const char**)&kernelSource, NULL, &err);
-	err = clBuildProgram(program, 0, NULL, NULL, NULL, NULL);
-	kernel = clCreateKernel(program, "subSegment", &err);
-	deviceSubSegmentArray1 = clCreateBuffer(context, CL_MEM_WRITE_ONLY, bytes, NULL, NULL);
-	deviceSubSegmentArray2 = clCreateBuffer(context, CL_MEM_WRITE_ONLY, bytes1, NULL, NULL);
-
-	err = clEnqueueWriteBuffer(queue, deviceSubSegmentArray1, CL_TRUE, 0, bytes, hostArray, 0, NULL, NULL);
-
-	err = clSetKernelArg(kernel, 0, sizeof(cl_mem), &deviceSubSegmentArray1);	 //argumenti kernela
-	err = clSetKernelArg(kernel, 0, sizeof(cl_mem), &deviceSubSegmentArray2);
-
-	err |= clSetKernelArg(kernel, 1, sizeof(int), &subSegmentWidth);
-	err |= clSetKernelArg(kernel, 2, sizeof(int), &subSegmentHeight);
-	err |= clSetKernelArg(kernel, 1, sizeof(int), &width);
-	err |= clSetKernelArg(kernel, 2, sizeof(int), &height);
-	clFinish(queue);
-	err = clEnqueueNDRangeKernel(queue, kernel, 2, NULL, globalSize, localSize, 0, NULL, NULL);
-	clFinish(queue);
-	clEnqueueReadBuffer(queue, deviceSubSegmentArray1, CL_TRUE, 0, bytes, hostArray, 0, NULL, NULL);
-	clEnqueueReadBuffer(queue, deviceSubSegmentArray2, CL_TRUE, 0, bytes, subArray, 0, NULL, NULL);
-	clFinish(queue);
-
-	clReleaseMemObject(deviceSubSegmentArray1);
-	clReleaseMemObject(deviceSubSegmentArray2);
-	clReleaseProgram(program);
-	clReleaseKernel(kernel);
-	clReleaseCommandQueue(queue);
-	clReleaseContext(context);
-	free(kernelSource);
-
-	return subArray;
-}
-*/
